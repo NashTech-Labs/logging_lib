@@ -1,0 +1,7 @@
+# JetBrains
+.idea/
+
+# SBT / Maven
+target/
+.bsp/
+project/
