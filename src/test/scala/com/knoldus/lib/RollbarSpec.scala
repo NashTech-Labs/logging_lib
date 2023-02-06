@@ -1,5 +1,6 @@
+package com.knoldus.lib
 
-object scalaTest extends App {
+object RollbarSpec extends App {
 
   case class Attribute1(
     att: String,
@@ -24,7 +25,6 @@ object scalaTest extends App {
   rollbarLogger.addAttributes("X", Attribute2("XXX", "SSS2"))
   rollbarLogger.addAttributes("C", Attribute3("CC", "SSS3"))
 
-  rollbarLogger.channelId(Attribute1("CC", "channelId"))
   rollbarLogger.organization(Attribute2("CC", "organization"))
   rollbarLogger.requestId(Attribute3("CC", "requestId"))
 

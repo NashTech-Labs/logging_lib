@@ -1,4 +1,4 @@
-RollbarLogger
+com.knoldus.lib.RollbarLogger
 
 Can send logs to Rollbar web service
 
@@ -9,7 +9,7 @@ To create a project:
     it will provide you token witch we will need to use 
 usage:
 
-Need to create RollbarLogger("token") object with your token. U can set two properties. withSendToRollbar  boolean and withFrequency long
+Need to create com.knoldus.lib.RollbarLogger("token") object with your token. U can set two properties. withSendToRollbar  boolean and withFrequency long
 
 withFrequency:
     default value 1. it means that logger will send all logs (1/1)100% to rollbar.
@@ -19,7 +19,7 @@ withSendToRollbar:
     if you will set value false it will send logs only to console.
 
 example:
-    val rollbarLogger = RollbarLogger("a8d39c45f43f481398ab1b15f68a2eaf")
+    val rollbarLogger = com.knoldus.lib.RollbarLogger("a8d39c45f43f481398ab1b15f68a2eaf")
         .withFrequency(10)
         .withSendToRollbar(true)
 

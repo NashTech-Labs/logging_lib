@@ -1,12 +1,16 @@
-import RollbarLogger.Keys
-import com.rollbar.notifier.config.ConfigBuilder.withAccessToken
+package com.knoldus.lib
+
 import com.rollbar.notifier.Rollbar
+import com.rollbar.notifier.config.ConfigBuilder.withAccessToken
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
+import play.api.libs.json.{JsValue, Json, Writes}
+
+import scala.jdk.CollectionConverters._
 import scala.util.Random
-import java.util.HashMap
 
 case class RollbarLogger(
+  attributes: Map[String, JsValue] = Map.empty[String, JsValue],
   rollbarToken: String,
   frequency: Long = 1L,
   shouldSendToRollbar: Boolean = true
@@ -14,22 +18,22 @@ case class RollbarLogger(
 {
   private val logger = LoggerFactory.getLogger("application")
 
-  private var attributes: java.util.Map[String, Object] = new HashMap[String,Object]()
+  import RollbarLogger._
 
   val rollbar: Rollbar = Rollbar.init(withAccessToken(rollbarToken)
     .environment("qa")
     .codeVersion("1.0.0")
     .build());
 
-  def addAttributes[T](key: String, value: T) = {
-    attributes.put(key, value.asInstanceOf[Object])
-  }
+  def withKeyValue[T: Writes](keyValue: (String, T)): RollbarLogger = withKeyValue(keyValue._1, keyValue._2)
+  def withKeyValues[T: Writes](keyValue: (String, Seq[T])): RollbarLogger = withKeyValues(keyValue._1, keyValue._2)
 
+  def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def withFrequency(frequency: Long): RollbarLogger = this.copy(frequency = frequency)
   def withSendToRollbar(sendToRollbar: Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
-  def requestId[T](value: T) = addAttributes(Keys.RequestId, value)
-  def channelId[T](value: T) = addAttributes(Keys.Channel_id, value)
-  def organization[T](value: T) = addAttributes(Keys.Organization, value)
+
+  def requestId[T](value: T): Object = withKeyValue(Keys.RequestId, value)
+  def organization[T](value: T): Object = withKeyValue(Keys.Organization, value)
 
   def debug(message: => String): Unit = debug(message, null)
 
@@ -41,16 +45,16 @@ case class RollbarLogger(
 
   def error(message: => String, error: => Throwable): Unit = {
     if (shouldLog) {
-      logger.error(appendEntries(attributes), message, error)
-      if (shouldSendToRollbar) rollbar.error(error, attributes, message)
+      logger.error(appendEntries(convert(attributes)), message, error)
+      if (shouldSendToRollbar) rollbar.error(error, convert(attributes), message)
     }
   }
 
   def info(message: => String, error: => Throwable): Unit = {
     if (shouldLog) {
-      logger.info(appendEntries(attributes), message, error)
+      logger.info(appendEntries(convert(attributes)), message, error)
       if (shouldSendToRollbar) {
-        rollbar.info(error, attributes, message)
+        rollbar.info(error, convert(attributes), message)
         rollbar.close(true)
       }
     }
@@ -58,15 +62,15 @@ case class RollbarLogger(
 
  def debug(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.debug(appendEntries(attributes), message, error)
-     if (shouldSendToRollbar) rollbar.debug(error, attributes, message)
+     logger.debug(appendEntries(convert(attributes)), message, error)
+     if (shouldSendToRollbar) rollbar.debug(error, convert(attributes), message)
    }
  }
 
  def warning(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.warn(appendEntries(attributes), message, error)
-     if (shouldSendToRollbar) rollbar.warning(error, attributes, message)
+     logger.warn(appendEntries(convert(attributes)), message, error)
+     if (shouldSendToRollbar) rollbar.warning(error, convert(attributes), message)
    }
  }
 
@@ -80,4 +84,7 @@ object RollbarLogger {
     val Organization = "organization"
     val Channel_id = "channel_id"
   }
+
+  def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
+    attributes.asJava.asInstanceOf[java.util.Map[String, Object]]
 }
