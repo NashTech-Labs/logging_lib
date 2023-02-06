@@ -10,6 +10,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.Random
 
 case class RollbarLogger(
+  rollbar: Rollbar,
   attributes: Map[String, JsValue] = Map.empty[String, JsValue],
   rollbarToken: String,
   frequency: Long = 1L,
@@ -20,7 +21,7 @@ case class RollbarLogger(
 
   import RollbarLogger._
 
-  val rollbar: Rollbar = Rollbar.init(withAccessToken(rollbarToken)
+  val rollbar1: Rollbar = Rollbar.init(withAccessToken(rollbarToken)
     .environment("qa")
     .codeVersion("1.0.0")
     .build());
@@ -31,10 +32,8 @@ case class RollbarLogger(
   def withKeyValue[T: Writes](key: String, value: T): RollbarLogger = this.copy(attributes = attributes + (key -> Json.toJson(value)))
   def withFrequency(frequency: Long): RollbarLogger = this.copy(frequency = frequency)
   def withSendToRollbar(sendToRollbar: Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
-
-  def requestId[T](value: T): Object = withKeyValue(Keys.RequestId, value)
-  def organization[T](value: T): Object = withKeyValue(Keys.Organization, value)
-
+  def requestId(value: String): Object = withKeyValue(Keys.RequestId, value)
+  def organization(value: String): Object = withKeyValue(Keys.Organization, value)
   def debug(message: => String): Unit = debug(message, null)
 
   def info(message: => String): Unit = info(message, null)
@@ -83,6 +82,7 @@ object RollbarLogger {
     val RequestId = "request_id"
     val Organization = "organization"
     val Channel_id = "channel_id"
+    val Fingerprint = "fingerprint"
   }
 
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
