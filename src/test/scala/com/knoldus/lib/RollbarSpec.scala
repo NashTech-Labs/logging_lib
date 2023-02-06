@@ -1,7 +1,6 @@
 package com.knoldus.lib
 
 object RollbarSpec extends App {
-
   case class Attribute1(
     att: String,
     name: String
@@ -16,30 +15,25 @@ object RollbarSpec extends App {
     att: String,
     name: String
   )
-  val rollbarLogger =
-    RollbarProvider.logger("a8d39c45f43f481398ab1b15f68a2eaf", Map.empty).withFrequency(1)
-      .withSendToRollbar(true)
 
   import play.api.libs.json._
 
-  //val rollbarLogger1 =RollbarLogger(Map.empty, "a8d39c45f43f481398ab1b15f68a2eaf")
+  implicit val Attribute1Writes = Json.writes[Attribute1]
+  implicit val Attribute1Format = Json.format[Attribute1]
+  implicit val Attribute2Writes = Json.writes[Attribute2]
+  implicit val Attribute2Format = Json.format[Attribute2]
+  implicit val Attribute3Writes = Json.writes[Attribute3]
+  implicit val Attribute3Format = Json.format[Attribute3]
 
-  implicit val residentWrites = Json.writes[Attribute1]
-  import play.api.libs.json._
+  val rollbarLogger = RollbarProvider.logger("a8d39c45f43f481398ab1b15f68a2eaf").organization("organization")
+    .withKeyValue("Z", Attribute1("ZZZZ", "SSS1"))
+    .withKeyValue("X", Attribute2("XXX", "SSS2"))
+    .withKeyValue("C", Attribute3("CC", "SSS3"))
+    .requestId("requestId")
 
-  implicit val residentFormat = Json.format[Attribute1]
-  //rollbarLogger.withKeyValue("Z", Attribute1("ZZZZ", "SSS1"))
-//rollbarLogger.withKeyValue("X", Attribute2("XXX", "SSS2"))
-//rollbarLogger.withKeyValue("C", Attribute3("CC", "SSS3"))
+  rollbarLogger.info("info message!")
+  rollbarLogger.error("error message!")
+  rollbarLogger.warn("warning message!")
+  rollbarLogger.debug("debug message!")
 
-  //rollbarLogger.organization(/*Attribute2("CC", "organization")*/"")
-  /////rollbarLogger.requestId(/*Attribute3("CC", "requestId")*/"")
-
- // rollbarLogger1.info("infoxcvxc message11")
-  //rollbarLogger.error("error message")
-  //rollbarLogger.warn("warning message")
-  //rollbarLogger.debug("debug message")
-
-
-  println("!21")
 }

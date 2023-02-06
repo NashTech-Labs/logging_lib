@@ -9,15 +9,14 @@ import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
 import com.rollbar.notifier.sender.result.Result
-import play.api.libs.json.{JsError, JsObject, JsSuccess, JsValue, Json, JsonParserSettings}
+import play.api.libs.json.{JsError, JsObject, JsSuccess, Json, JsonParserSettings}
 import play.api.libs.json.jackson.PlayJsonModule
 
 object RollbarProvider {
   def logger(
-    token: String,
-    attributes: Map[String, JsValue] = Map.empty[String, JsValue]
+    token: String
   ): RollbarLogger = {
-    RollbarLogger(rollbar(token),attributes, token)
+    RollbarLogger(rollbar(token), Map.empty, token)
   }
 
   def rollbar(token: String): Rollbar = {
