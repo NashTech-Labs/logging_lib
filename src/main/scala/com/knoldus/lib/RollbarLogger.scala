@@ -28,6 +28,7 @@ case class RollbarLogger(
   def withSendToRollbar(sendToRollbar: Boolean): RollbarLogger = this.copy(shouldSendToRollbar = sendToRollbar)
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
+  def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
   def debug(message: => String): Unit = debug(message, null)
 
   def info(message: => String): Unit = info(message, null)
@@ -84,7 +85,6 @@ object RollbarLogger {
   object Keys {
     val RequestId = "request_id"
     val Organization = "organization"
-    val Channel_id = "channel_id"
     val Fingerprint = "fingerprint"
   }
 

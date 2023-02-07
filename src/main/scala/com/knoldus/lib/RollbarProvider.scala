@@ -8,6 +8,7 @@ import com.rollbar.api.payload.data.Data
 import com.rollbar.notifier.Rollbar
 import com.rollbar.notifier.config.ConfigBuilder
 import com.rollbar.notifier.fingerprint.FingerprintGenerator
+import com.rollbar.notifier.sender.json.JsonSerializer
 import com.rollbar.notifier.sender.result.Result
 import play.api.libs.json.{JsError, JsObject, JsSuccess, Json, JsonParserSettings}
 import play.api.libs.json.jackson.PlayJsonModule
@@ -19,12 +20,12 @@ object RollbarProvider {
     RollbarLogger(rollbar(token), Map.empty, token)
   }
 
-  def rollbar(token: String): Rollbar = {
+  private def rollbar(token: String): Rollbar = {
     val baseConfig = RollbarProvider.baseConfig(token)
     Rollbar.init(baseConfig)
   }
 
-  def baseConfig(token: String): com.rollbar.notifier.config.Config = {
+  private def baseConfig(token: String): com.rollbar.notifier.config.Config = {
     val fingerprintGenerator = new FingerprintGenerator {
       override def from(data: Data): String = {
         Option(data.getCustom)
@@ -34,7 +35,7 @@ object RollbarProvider {
       }
     }
 
-    val jacksonSerializer = new com.rollbar.notifier.sender.json.JsonSerializer {
+    val jacksonSerializer: JsonSerializer = new com.rollbar.notifier.sender.json.JsonSerializer {
 
       val mapper = new ObjectMapper()
 

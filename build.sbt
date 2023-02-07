@@ -1,6 +1,9 @@
-ThisBuild / version := "0.1.0-SNAPSHOT"
+
+ThisBuild / version := "1.0"
 
 ThisBuild / scalaVersion := "2.13.10"
+
+ThisBuild / organization := "knoldus"
 
 lazy val root = (project in file("."))
   .settings(
@@ -12,4 +15,8 @@ libraryDependencies ++= Seq(
   "net.logstash.logback" % "logstash-logback-encoder" % "6.3",
   "com.typesafe.play" %% "play-json" % "2.9.4"
 )
-publishTo := Some(Resolver.file("file", new File("/home/knolder/IdeaProjects")))
+
+publishMavenStyle := true
+resolvers += ArtifactRegistryResolver.forRepository("https://asia-maven.pkg.dev/sonarqube-289802/knoldus-aws-lib")
+
+publishTo := Some(ArtifactRegistryResolver.forRepository("https://asia-maven.pkg.dev/sonarqube-289802/knoldus-aws-lib"))
