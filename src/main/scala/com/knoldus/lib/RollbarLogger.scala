@@ -17,7 +17,7 @@ case class RollbarLogger(
   shouldSendToRollbar: Boolean = true
 ) extends StrictLogging
 {
-  override val logger = Logger(LoggerFactory.getLogger(classOf[RollbarLogger]))
+  override val logger: Logger = Logger(LoggerFactory.getLogger(classOf[RollbarLogger]))
 
   import RollbarLogger._
 
@@ -30,6 +30,7 @@ case class RollbarLogger(
   def requestId(value: String): RollbarLogger = withKeyValue(Keys.RequestId, value)
   def organization(value: String): RollbarLogger = withKeyValue(Keys.Organization, value)
   def fingerprint(value: String): RollbarLogger = withKeyValue(Keys.Fingerprint, value)
+  
   def debug(message: => String): Unit = debug(message, null)
 
   def info(message: => String): Unit = info(message, null)
@@ -40,7 +41,7 @@ case class RollbarLogger(
 
   def error(message: => String, error: => Throwable): Unit = {
     if (shouldLog) {
-      logger.info(appendEntries(convert(attributes)), message, error)
+      logger.error(appendEntries(convert(attributes)), message, error)
       if (shouldSendToRollbar) {
         rollbar.error(error, convert(attributes), message)
         rollbar.close(true)
@@ -60,7 +61,7 @@ case class RollbarLogger(
 
  def debug(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.info(appendEntries(convert(attributes)), message, error)
+     logger.debug(appendEntries(convert(attributes)), message, error)
      if (shouldSendToRollbar) {
        rollbar.debug(error, convert(attributes), message)
        rollbar.close(true)
@@ -70,7 +71,7 @@ case class RollbarLogger(
 
  def warning(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.info(appendEntries(convert(attributes)), message, error)
+     logger.warn(appendEntries(convert(attributes)), message, error)
      if (shouldSendToRollbar) {
        rollbar.warning(error, convert(attributes), message)
        rollbar.close(true)

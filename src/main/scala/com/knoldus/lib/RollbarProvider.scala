@@ -15,7 +15,7 @@ import play.api.libs.json.jackson.PlayJsonModule
 
 object RollbarProvider {
   def logger(
-    token: String
+    token: String = ""
   ): RollbarLogger = {
     RollbarLogger(rollbar(token), Map.empty, token)
   }
