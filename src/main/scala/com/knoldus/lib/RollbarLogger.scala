@@ -1,6 +1,7 @@
 package com.knoldus.lib
 
 import com.rollbar.notifier.Rollbar
+import com.typesafe.scalalogging.{Logger, StrictLogging}
 import net.logstash.logback.marker.Markers.appendEntries
 import org.slf4j.LoggerFactory
 import play.api.libs.json.{JsValue, Json, Writes}
@@ -14,9 +15,9 @@ case class RollbarLogger(
   rollbarToken: String,
   frequency: Long = 1L,
   shouldSendToRollbar: Boolean = true
-)
+) extends StrictLogging
 {
-  private val logger = LoggerFactory.getLogger("application")
+  override val logger = Logger(LoggerFactory.getLogger(classOf[RollbarLogger]))
 
   import RollbarLogger._
 
@@ -39,7 +40,7 @@ case class RollbarLogger(
 
   def error(message: => String, error: => Throwable): Unit = {
     if (shouldLog) {
-      logger.error(appendEntries(convert(attributes)), message, error)
+      logger.info(appendEntries(convert(attributes)), message, error)
       if (shouldSendToRollbar) {
         rollbar.error(error, convert(attributes), message)
         rollbar.close(true)
@@ -59,7 +60,7 @@ case class RollbarLogger(
 
  def debug(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.debug(appendEntries(convert(attributes)), message, error)
+     logger.info(appendEntries(convert(attributes)), message, error)
      if (shouldSendToRollbar) {
        rollbar.debug(error, convert(attributes), message)
        rollbar.close(true)
@@ -69,7 +70,7 @@ case class RollbarLogger(
 
  def warning(message: => String, error: => Throwable): Unit = {
    if (shouldLog) {
-     logger.warn(appendEntries(convert(attributes)), message, error)
+     logger.info(appendEntries(convert(attributes)), message, error)
      if (shouldSendToRollbar) {
        rollbar.warning(error, convert(attributes), message)
        rollbar.close(true)
@@ -87,7 +88,6 @@ object RollbarLogger {
     val Organization = "organization"
     val Fingerprint = "fingerprint"
   }
-
   def convert(attributes: Map[String, JsValue]): java.util.Map[String, Object] =
     attributes.asJava.asInstanceOf[java.util.Map[String, Object]]
 }
