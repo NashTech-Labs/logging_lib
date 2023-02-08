@@ -12,7 +12,7 @@ object RollbarSpec extends App {
   implicit val AttributeFormat: OFormat[Attribute] = Json.format[Attribute]
 
   val rollbarLogger = RollbarProvider
-    .logger("Token")
+    .logger("TOKEN")
     .organization("organization1")
     .requestId("requestId1")
     .withKeyValue("applicationName1", Attribute("appName", "Knoldus test log lib"))
